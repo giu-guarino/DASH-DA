@@ -20,14 +20,14 @@ Finally, run `preproc.py` to generate the necessary data files.
 
 ### Input arguments 
 Scripts take the following input arguments in order (they are used for data loading configuration and may be modified to meet your own dataset conventions):
-1) Dataset name (SUNRGBD, TRISTAR or HANDS);
-2) Source data prefix: identifies which data will serve as source domain modality. E.g.: *RGB* or *DEPTH* (for the *SUN RGBD* benchmark) and *THERMAL* or *DEPTH* (for the *TRISTAR* benchmark). The script will consider the unselected modality as Target;
-3) Backbone architecture name (ResNet-18 or TinyViT);
-4) GPU number; 
-5) Number of labeled samples on the target domain. E.g.: 5, 10, 25, 50, or a combination of them;
-6) Split number: choose a different train-test split. E.g.: 0, 1, 2, 3, 4, or a combination of them.
+1) **Dataset Name**: Choose from *SUNRGBD*, *TRISTAR*, or *HANDS*.  
+2) **Source Data Prefix**: Specifies the modality used as the source domain. Options include *RGB* or *DEPTH* (for *SUNRGBD* and *HANDS*) and *THERMAL* or *DEPTH* (for *TRISTAR*). The remaining modality is automatically assigned as the target domain.  
+3) **Backbone Architecture**: Select either *ResNet-18* or *TinyViT*.  
+4) **GPU Number**: Specify the GPU to use.  
+5) **Labeled Target Samples**: Define the number of labeled target samples (e.g., 5, 10, 25, 50) or provide multiple values.  
+6) **Split Number**: Choose a specific train-test split (e.g., 0, 1, 2, 3, 4) or select multiple splits.
 
-*   Example of running istruction:
+Example of running istruction:
 
 <!---->
 
