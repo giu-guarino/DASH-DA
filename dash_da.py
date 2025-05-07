@@ -213,11 +213,22 @@ def train_and_eval(ds_path, out_dir, nsamples, nsplit, ds_idx, source_idx, gpu, 
 
             inv_emb = torch.cat([emb_source_inv, emb_target_inv])
             spec_emb = torch.cat([emb_source_spec, emb_target_spec])
+            unl_inv = torch.cat([unl_target_inv, unl_target_aug_inv], dim=0)
+            unl_spec = torch.cat([unl_target_spec, unl_target_aug_spec], dim=0)
 
-            norm_inv_emb = nn.functional.normalize(inv_emb)
-            norm_spec_emb = nn.functional.normalize(spec_emb)
-            loss_ortho = torch.sum( norm_inv_emb * norm_spec_emb, dim=1)
-            loss_ortho = torch.mean(loss_ortho)
+            if backbone == "TinyViT":
+                inv_emb = torch.abs(inv_emb)
+                spec_emb = torch.abs(spec_emb)
+                unl_inv = torch.abs(unl_inv)
+                unl_spec = torch.abs(unl_spec)
+
+            norm_inv_emb = F.normalize(inv_emb)
+            norm_spec_emb = F.normalize(spec_emb)
+            norm_unl_inv = F.normalize(unl_inv)
+            norm_unl_spec = F.normalize(unl_spec)
+
+            loss_ortho = torch.mean(torch.sum( norm_inv_emb * norm_spec_emb, dim=1))
+            u_loss_ortho = torch.mean(torch.sum(norm_unl_inv * norm_unl_spec, dim=1))
 
             model.target.train()
             unl_target_inv, unl_target_spec, pred_unl_target_dom, pred_unl_target = model.forward_source(x_batch_target_unl, 1)
@@ -225,12 +236,6 @@ def train_and_eval(ds_path, out_dir, nsamples, nsplit, ds_idx, source_idx, gpu, 
 
             pred_unl_dom = torch.cat([pred_unl_target_strong_dom,pred_unl_target_dom],dim=0)
             u_loss_dom = loss_fn(pred_unl_dom, torch.ones(pred_unl_dom.shape[0]).long().to(device))
-
-            unl_inv = torch.cat([unl_target_inv,unl_target_aug_inv],dim=0)
-            norm_unl_inv = F.normalize(unl_inv)
-            unl_spec = torch.cat([unl_target_spec,unl_target_aug_spec],dim=0)
-            norm_unl_spec = F.normalize(unl_spec)
-            u_loss_ortho = torch.mean( torch.sum( norm_unl_inv * norm_unl_spec, dim=1) )
 
             emb_t_all = torch.cat((emb_target_inv, unl_target_aug_inv), dim=0)  # all target embeddings (labelled + unlabelled)
             wasserstein_distance = critic(emb_source_inv).mean() - critic(emb_t_all).mean()

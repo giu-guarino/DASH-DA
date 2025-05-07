@@ -712,7 +712,7 @@ class DASH_DA_TV(nn.Module):
         # Domain Classifier head
         self.norm_head_dom = nn.LayerNorm(embed_dims[-1] // 2)
         self.domain_cl = nn.Linear(
-            embed_dims[-1] // 2, num_classes) if num_classes > 0 else torch.nn.Identity()
+            embed_dims[-1] // 2, 2) if num_classes > 0 else torch.nn.Identity()
 
         # Task Classifier head
         self.norm_head_task = nn.LayerNorm(embed_dims[-1] // 2)
